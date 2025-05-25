@@ -1,10 +1,5 @@
 import React, { useRef, useState } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import MovieCard from "../movie/MovieCard";
 import type { Movie, RecentlyViewedItem } from "../../types";
 
@@ -67,31 +62,24 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
   };
 
   return (
-    <div className="mb-8">
-      {/* Section Header - Consistent with TabSwitcher styling */}
-      <div className="mb-6">
+    <div className="px-6 py-4">
+      {/* Section Header */}
+      <div className="mb-4">
         <div
           onClick={onToggle}
-          className="flex items-center justify-between cursor-pointer group"
+          className="flex items-center gap-2 cursor-pointer group"
         >
-          <h2 className="text-xl font-bold text-white group-hover:text-gray-200 transition-colors">
+          <h2 className="text-lg font-semibold text-white group-hover:text-gray-200 transition-colors">
             {title}
           </h2>
           <div className="text-gray-400 group-hover:text-white transition-colors">
-            {isCollapsed ? (
-              <ChevronDown className="w-5 h-5" />
-            ) : (
-              <ChevronUp className="w-5 h-5" />
-            )}
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                isCollapsed ? "" : "rotate-180"
+              }`}
+            />
           </div>
         </div>
-
-        {/* Underline similar to TabSwitcher */}
-        {!isCollapsed && (
-          <div className="mt-3 border-b border-gray-700">
-            <div className="h-0.5 bg-[#FFD600] w-24"></div>
-          </div>
-        )}
       </div>
 
       {!isCollapsed && (
@@ -107,7 +95,7 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
               showArrows ? "opacity-100" : "opacity-0"
             }`}
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
 
           {/* Right Arrow */}
@@ -117,23 +105,20 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
               showArrows ? "opacity-100" : "opacity-0"
             }`}
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5" />
           </button>
 
-          {/* Scrollable Container */}
+          {/* Scrollable Container - Matching the design's horizontal layout */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide"
+            className="flex gap-3 overflow-x-auto pb-2 scroll-smooth scrollbar-hide"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {combinedItems.map((item) => (
               <div
                 key={`${item.type}-${item.imdbID}`}
-                className="flex-shrink-0 w-48 relative"
+                className="flex-shrink-0 w-36"
               >
-                {/* Type indicator badge */}
-                <div className="absolute top-2 right-2 z-10 bg-[#FFD600] text-black text-xs font-semibold px-2 py-1 rounded-full">
-                  {item.type === "movie" ? "Movie" : "Series"}
-                </div>
                 <MovieCard movie={item} onClick={onMovieClick} />
               </div>
             ))}

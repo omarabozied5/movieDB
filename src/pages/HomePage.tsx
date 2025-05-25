@@ -6,7 +6,6 @@ import MovieDialog from "../components/movie/MovieDialoge";
 import RecentlyViewed from "../components/common/RecentlyViewed";
 import { useMovieStore } from "../store/movieStore";
 import Header from "@/components/common/Header";
-import ContentHeader from "@/components/common/ContentHeader";
 import ErrorState from "@/components/common/ErrorState";
 import LoadingState from "@/components/common/LoadingState";
 import WelcomeMessage from "@/components/common/WelcomeMessage";
@@ -89,21 +88,21 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Header - Fixed positioning with proper spacing */}
-      <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-sm border-b border-gray-800 shadow-lg">
+      {/* Header - Fixed positioning */}
+      <header className="sticky top-0 z-40 bg-black border-b border-gray-800">
         <Header />
       </header>
 
-      {/* Main Content - Consistent container alignment */}
-      <main className="max-w-7xl mx-auto px-4">
-        {/* Recently Viewed Section - Same alignment as other sections */}
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto">
+        {/* Recently Viewed Section */}
         {(recentlyViewed.movies.length > 0 ||
           recentlyViewed.series.length > 0) && (
-          <section className="py-8 border-b border-gray-800/50">
+          <section className="border-b border-gray-800/50">
             <RecentlyViewed
               movies={recentlyViewed.movies || []}
               series={recentlyViewed.series || []}
-              title="Recently Viewed"
+              title="Recently Viewed shows"
               isCollapsed={recentlyViewedCollapsed.combined || false}
               onToggle={handleRecentlyViewedToggle}
               onMovieClick={handleMovieClick}
@@ -111,40 +110,24 @@ const HomePage: React.FC = () => {
           </section>
         )}
 
-        {/* Content Navigation Section */}
-        <section className="py-6">
-          {/* Tab Switcher with better spacing */}
-          <div className="mb-8">
-            <TabSwitcher
-              activeTab={type}
-              onTabChange={handleTabChange}
-              isShowingPopular={isShowingPopular}
-              query={query}
-            />
-          </div>
+        {/* Tab Navigation */}
+        <TabSwitcher
+          activeTab={type}
+          onTabChange={handleTabChange}
+          isShowingPopular={isShowingPopular}
+          query={query}
+        />
 
-          {/* Content Header with consistent spacing */}
-          <div className="mb-6">
-            <ContentHeader
-              resultsLength={results.length}
-              loading={loading}
-              isShowingPopular={isShowingPopular}
-              type={type}
-              query={query}
-            />
-          </div>
-        </section>
-
-        {/* Main Content Area */}
-        <section className="pb-12">
-          {/* Error State - Centered with proper spacing */}
+        {/* Content Section */}
+        <section className="min-h-screen">
+          {/* Error State */}
           {error && (
             <div className="flex justify-center items-center min-h-[400px] py-12">
               <ErrorState error={error} onRetry={handleRetry} />
             </div>
           )}
 
-          {/* Loading State - Centered with proper spacing */}
+          {/* Loading State */}
           {loading && results.length === 0 && (
             <div className="flex justify-center items-center min-h-[400px] py-12">
               <LoadingState
@@ -156,20 +139,18 @@ const HomePage: React.FC = () => {
             </div>
           )}
 
-          {/* Movie Grid - Proper spacing and alignment */}
+          {/* Movie Grid */}
           {!error && (
-            <div className="space-y-8">
-              <MovieGrid
-                movies={results}
-                loading={loading}
-                hasMore={hasMore && !isShowingPopular}
-                onLoadMore={loadMore}
-                onMovieClick={handleMovieClick}
-              />
-            </div>
+            <MovieGrid
+              movies={results}
+              loading={loading}
+              hasMore={hasMore && !isShowingPopular}
+              onLoadMore={loadMore}
+              onMovieClick={handleMovieClick}
+            />
           )}
 
-          {/* Welcome Message - Centered when no content */}
+          {/* Welcome Message */}
           {!loading && results.length === 0 && !error && (
             <div className="flex justify-center items-center min-h-[400px] py-12">
               <WelcomeMessage
@@ -183,7 +164,7 @@ const HomePage: React.FC = () => {
         </section>
       </main>
 
-      {/* Movie Dialog - Portal overlay */}
+      {/* Movie Dialog */}
       <MovieDialog
         movie={selectedMovie}
         isOpen={isDialogOpen}
