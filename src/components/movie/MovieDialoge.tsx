@@ -1,5 +1,5 @@
-import React from "react";
-import { X, Calendar, Star, Play } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { Star, Calendar, Globe, Clock, Award, Users, Film } from "lucide-react";
 import type { MovieDialogProps } from "../../types";
 
 const MovieDialog: React.FC<MovieDialogProps> = ({
@@ -8,170 +8,176 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
   onClose,
   onMoreInfo,
 }) => {
-  if (!isOpen || !movie) return null;
+  const dialogRef = useRef<HTMLDivElement>(null);
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("keydown", handleEscape);
+      };
     }
-  };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !movie) return null;
 
   const handleMoreInfo = () => {
     onMoreInfo(movie);
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      onClick={handleBackdropClick}
-    >
-      <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-700/50 shadow-2xl">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-50 text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800/50"
-        >
-          <X className="w-6 h-6" />
-        </button>
-
-        {/* Content */}
-        <div className="overflow-y-auto max-h-[90vh]">
-          {/* Hero section with backdrop */}
-          <div className="relative h-80 overflow-hidden">
-            <img
-              src={
-                movie.Poster !== "N/A"
-                  ? movie.Poster
-                  : "/api/placeholder/800/450"
-              }
-              alt={movie.Title}
-              className="w-full h-full object-cover blur-sm scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-gray-900/40" />
-
-            {/* Movie poster and basic info overlay */}
-            <div className="absolute bottom-6 left-6 flex items-end gap-6">
+    <div className="col-span-full">
+      <div
+        ref={dialogRef}
+        className="bg-gray-900/95 backdrop-blur-md rounded-xl border border-yellow-400/30 shadow-2xl mx-4 my-4 overflow-hidden animate-slide-in-up"
+      >
+        {/* Main content container */}
+        <div className="flex flex-col lg:flex-row">
+          {/* Movie poster section */}
+          <div className="lg:w-1/3 p-6 flex justify-center lg:justify-start">
+            <div className="relative">
               <img
                 src={
                   movie.Poster !== "N/A"
                     ? movie.Poster
-                    : "/api/placeholder/200/300"
+                    : "/api/placeholder/300/450"
                 }
                 alt={movie.Title}
-                className="w-32 h-48 object-cover rounded-lg shadow-2xl border-2 border-white/20"
+                className="w-48 h-72 object-cover rounded-lg shadow-xl"
               />
-
-              <div className="pb-4">
-                <h1 className="text-3xl font-bold text-white mb-2">
-                  {movie.Title}
-                </h1>
-
-                {/* Meta info */}
-                <div className="flex items-center gap-4 text-sm text-gray-300 mb-4">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    <span>{movie.Year}</span>
-                  </div>
-
-                  {movie.imdbRating && (
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{movie.imdbRating}</span>
-                    </div>
-                  )}
-
-                  <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full font-medium uppercase tracking-wide">
-                    {movie.Type}
-                  </span>
+              {movie.imdbRating && (
+                <div className="absolute -top-2 -right-2 bg-yellow-400 text-black px-2 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-current" />
+                  {movie.imdbRating}
                 </div>
-
-                {/* Action button */}
-                <button
-                  onClick={handleMoreInfo}
-                  className="flex items-center gap-2 px-6 py-3 bg-[#FFD600] text-black rounded-lg hover:bg-[#FFD600]/90 transition-colors font-semibold"
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                  More Info
-                </button>
-              </div>
+              )}
             </div>
           </div>
 
-          {/* Details section */}
-          <div className="p-6 space-y-6">
-            {/* Genre and Runtime */}
-            <div className="flex flex-wrap gap-4 text-sm">
-              {movie.Genre && (
-                <div>
-                  <span className="text-gray-400">Genre: </span>
-                  <span className="text-white">{movie.Genre}</span>
+          {/* Movie details section */}
+          <div className="lg:w-2/3 p-6 space-y-4">
+            {/* Title and basic info */}
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {movie.Title}
+              </h2>
+
+              {/* Meta information */}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300 mb-4">
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>{movie.Year}</span>
                 </div>
-              )}
-              {movie.Runtime && (
-                <div>
-                  <span className="text-gray-400">Runtime: </span>
-                  <span className="text-white">{movie.Runtime}</span>
+
+                {movie.Runtime && (
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    <span>{movie.Runtime}</span>
+                  </div>
+                )}
+
+                <div className="px-2 py-1 bg-yellow-400 text-black text-xs rounded-full font-semibold uppercase tracking-wide">
+                  {movie.Type}
                 </div>
-              )}
-              {movie.Released && (
-                <div>
-                  <span className="text-gray-400">Released: </span>
-                  <span className="text-white">{movie.Released}</span>
-                </div>
-              )}
+              </div>
             </div>
 
-            {/* Plot */}
+            {/* Plot/Synopsis */}
             {movie.Plot && movie.Plot !== "N/A" && (
               <div>
-                <h3 className="text-white font-semibold mb-2 text-lg">
-                  Synopsis
+                <h3 className="text-white font-semibold mb-2 text-sm uppercase tracking-wide">
+                  Short Bio:
                 </h3>
-                <p className="text-gray-300 leading-relaxed">{movie.Plot}</p>
+                <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">
+                  {movie.Plot}
+                </p>
               </div>
             )}
 
-            {/* Cast and Crew */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Details grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              {/* Genre */}
+              {movie.Genre && movie.Genre !== "N/A" && (
+                <div>
+                  <span className="text-yellow-400 font-semibold">Genre</span>
+                  <p className="text-gray-300">{movie.Genre}</p>
+                </div>
+              )}
+
+              {/* Released */}
+              {movie.Released && movie.Released !== "N/A" && (
+                <div>
+                  <span className="text-yellow-400 font-semibold">
+                    Released
+                  </span>
+                  <p className="text-gray-300">{movie.Released}</p>
+                </div>
+              )}
+
+              {/* Directors */}
               {movie.Director && movie.Director !== "N/A" && (
                 <div>
-                  <h4 className="text-white font-semibold mb-2">Directors</h4>
+                  <span className="text-yellow-400 font-semibold">
+                    Directors
+                  </span>
                   <p className="text-gray-300">{movie.Director}</p>
                 </div>
               )}
 
+              {/* Language */}
               {movie.Language && movie.Language !== "N/A" && (
                 <div>
-                  <h4 className="text-white font-semibold mb-2">Language</h4>
+                  <span className="text-yellow-400 font-semibold">
+                    Language
+                  </span>
                   <p className="text-gray-300">{movie.Language}</p>
                 </div>
               )}
             </div>
 
+            {/* Cast */}
             {movie.Actors && movie.Actors !== "N/A" && (
               <div>
-                <h4 className="text-white font-semibold mb-2">Cast</h4>
-                <p className="text-gray-300">{movie.Actors}</p>
+                <h3 className="text-yellow-400 font-semibold mb-1">Cast</h3>
+                <p className="text-gray-300 text-sm">{movie.Actors}</p>
               </div>
             )}
 
-            {/* Additional details */}
-            {(movie.Country || movie.Awards) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm border-t border-gray-700 pt-6">
-                {movie.Country && movie.Country !== "N/A" && (
-                  <div>
-                    <span className="text-gray-400">Country: </span>
-                    <span className="text-white">{movie.Country}</span>
-                  </div>
-                )}
-                {movie.Awards && movie.Awards !== "N/A" && (
-                  <div>
-                    <span className="text-gray-400">Awards: </span>
-                    <span className="text-white">{movie.Awards}</span>
-                  </div>
-                )}
+            {/* Awards */}
+            {movie.Awards && movie.Awards !== "N/A" && (
+              <div>
+                <h3 className="text-yellow-400 font-semibold mb-1">Awards</h3>
+                <p className="text-gray-300 text-sm">{movie.Awards}</p>
               </div>
             )}
+
+            {/* Action button */}
+            <div className="pt-4">
+              <button
+                onClick={handleMoreInfo}
+                className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold transition-colors duration-200 flex items-center gap-2"
+              >
+                <Film className="w-4 h-4" />
+                More Info
+              </button>
+            </div>
           </div>
         </div>
       </div>

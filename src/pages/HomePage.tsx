@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MovieGrid from "../components/movie/MovieGrid";
-import MovieDialog from "../components/movie/MovieDialoge";
 import RecentlyViewed from "../components/common/RecentlyViewed";
 import { useMovieStore } from "../store/movieStore";
 import Header from "@/components/common/Header";
@@ -36,7 +35,7 @@ const HomePage: React.FC = () => {
     selectMovie,
     closeDialog,
     toggleRecentlyViewed,
-    setType, // Add this action for tab switching
+    setType,
   } = useMovieStore();
 
   // Load popular content on component mount
@@ -47,7 +46,12 @@ const HomePage: React.FC = () => {
   }, [results.length, loading, error, loadPopular]);
 
   const handleMovieClick = (movie: any) => {
-    selectMovie(movie);
+    // Toggle selection - if same movie is clicked, close dropdown
+    if (selectedMovie?.imdbID === movie.imdbID && isDialogOpen) {
+      closeDialog();
+    } else {
+      selectMovie(movie);
+    }
   };
 
   const handleDialogClose = () => {
@@ -55,6 +59,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleMoreInfo = (movie: any) => {
+    closeDialog(); // Close the dropdown first
     navigate(`/movie/${movie.imdbID}`);
   };
 
@@ -64,6 +69,7 @@ const HomePage: React.FC = () => {
 
   const handleTabChange = (newType: "movie" | "series") => {
     if (setType) {
+      closeDialog(); // Close any open dropdown when switching tabs
       setType(newType);
       // Reload content when tab changes
       if (query) {
@@ -75,6 +81,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleRetry = () => {
+    closeDialog(); // Close dropdown on retry
     if (isShowingPopular) {
       loadPopular();
     } else {
@@ -83,6 +90,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleLoadPopular = () => {
+    closeDialog(); // Close dropdown when loading popular
     loadPopular();
   };
 
@@ -139,7 +147,7 @@ const HomePage: React.FC = () => {
             </div>
           )}
 
-          {/* Movie Grid */}
+          {/* Movie Grid with Dropdown Dialog */}
           {!error && (
             <MovieGrid
               movies={results}
@@ -147,6 +155,10 @@ const HomePage: React.FC = () => {
               hasMore={hasMore && !isShowingPopular}
               onLoadMore={loadMore}
               onMovieClick={handleMovieClick}
+              selectedMovie={selectedMovie}
+              isDialogOpen={isDialogOpen}
+              onDialogClose={handleDialogClose}
+              onMoreInfo={handleMoreInfo}
             />
           )}
 
@@ -163,14 +175,6 @@ const HomePage: React.FC = () => {
           )}
         </section>
       </main>
-
-      {/* Movie Dialog */}
-      <MovieDialog
-        movie={selectedMovie}
-        isOpen={isDialogOpen}
-        onClose={handleDialogClose}
-        onMoreInfo={handleMoreInfo}
-      />
     </div>
   );
 };

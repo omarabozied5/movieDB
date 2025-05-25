@@ -2,6 +2,7 @@ import React from "react";
 import { useInView } from "react-intersection-observer";
 import { Loader2 } from "lucide-react";
 import MovieCard from "./MovieCard";
+import MovieDialog from "./MovieDialoge";
 import { Movie } from "../../types";
 
 interface MovieGridProps {
@@ -10,6 +11,10 @@ interface MovieGridProps {
   hasMore: boolean;
   onLoadMore: () => void;
   onMovieClick: (movie: Movie) => void;
+  selectedMovie?: Movie | null;
+  isDialogOpen: boolean;
+  onDialogClose: () => void;
+  onMoreInfo: (movie: Movie) => void;
 }
 
 const MovieGrid: React.FC<MovieGridProps> = ({
@@ -18,6 +23,10 @@ const MovieGrid: React.FC<MovieGridProps> = ({
   hasMore,
   onLoadMore,
   onMovieClick,
+  selectedMovie,
+  isDialogOpen,
+  onDialogClose,
+  onMoreInfo,
 }) => {
   const { ref, inView } = useInView({
     threshold: 0,
@@ -33,7 +42,7 @@ const MovieGrid: React.FC<MovieGridProps> = ({
   if (movies.length === 0 && loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-yellow-400" />
         <span className="ml-2 text-gray-400">Loading...</span>
       </div>
     );
@@ -49,12 +58,42 @@ const MovieGrid: React.FC<MovieGridProps> = ({
     );
   }
 
+  // Find the index of the selected movie to insert dropdown after its row
+  const selectedMovieIndex = selectedMovie
+    ? movies.findIndex((movie) => movie.imdbID === selectedMovie.imdbID)
+    : -1;
+
+  // Calculate how many columns per row (5 columns as per design)
+  const columnsPerRow = 5;
+  const selectedRowEnd =
+    selectedMovieIndex >= 0
+      ? Math.floor(selectedMovieIndex / columnsPerRow) * columnsPerRow +
+        columnsPerRow -
+        1
+      : -1;
+
   return (
     <div className="px-6">
-      {/* 5-column grid matching the design */}
+      {/* Grid container with dynamic content insertion */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {movies.map((movie) => (
-          <MovieCard key={movie.imdbID} movie={movie} onClick={onMovieClick} />
+        {movies.map((movie, index) => (
+          <React.Fragment key={movie.imdbID}>
+            <MovieCard
+              movie={movie}
+              onClick={onMovieClick}
+              isSelected={selectedMovie?.imdbID === movie.imdbID}
+            />
+
+            {/* Insert dropdown dialog after the end of the row containing selected movie */}
+            {isDialogOpen && selectedMovie && index === selectedRowEnd && (
+              <MovieDialog
+                movie={selectedMovie}
+                isOpen={isDialogOpen}
+                onClose={onDialogClose}
+                onMoreInfo={onMoreInfo}
+              />
+            )}
+          </React.Fragment>
         ))}
       </div>
 
@@ -63,7 +102,7 @@ const MovieGrid: React.FC<MovieGridProps> = ({
         <div ref={ref} className="flex justify-center py-8">
           {loading && (
             <div className="flex items-center">
-              <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-yellow-400" />
               <span className="ml-2 text-gray-400">Loading more...</span>
             </div>
           )}

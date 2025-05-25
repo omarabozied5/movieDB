@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import MovieCard from "../movie/MovieCard";
 import type { Movie, RecentlyViewedItem } from "../../types";
 
@@ -73,8 +73,8 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
             {title}
           </h2>
           <div className="text-gray-400 group-hover:text-white transition-colors">
-            <ChevronDown
-              className={`w-4 h-4 transition-transform ${
+            <ChevronUp
+              className={`w-8 h-8 transition-transform ${
                 isCollapsed ? "" : "rotate-180"
               }`}
             />

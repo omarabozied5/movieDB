@@ -1,48 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { Search } from "lucide-react";
 import { useMovieStore } from "../../store/movieStore";
+import SearchBar from "./SearchBar";
 
 const Header: React.FC = () => {
   const { setQuery, query, search } = useMovieStore();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = () => {
     if (query.trim()) {
       search(true);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch(e as any);
-    }
-  };
-
   return (
-    <div className="bg-black border-b border-gray-800">
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white flex items-center">
+    <div className="bg-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Top section with logo and search */}
+        <div className="flex items-center justify-between gap-4 py-6">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white flex items-center flex-shrink-0">
             Movies
             <span className="text-[#FFD600]">DB</span>
           </h1>
 
-          <div className="relative">
-            <form onSubmit={handleSearch} className="relative">
-              <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Search"
-                className="w-72 px-4 py-2.5 pl-12 bg-gray-900/80 border border-gray-700/50 rounded-lg text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600 transition-colors"
-              />
-            </form>
+          <div className="flex-1 max-w-md">
+            <SearchBar
+              query={query}
+              onQueryChange={setQuery}
+              onSearch={handleSearch}
+            />
           </div>
         </div>
       </div>
+
+      {/* Bottom border */}
+      <div className="border-b border-gray-800"></div>
     </div>
   );
 };

@@ -97,6 +97,7 @@ export interface RecentlyViewed {
 export interface MovieCardProps {
   movie: Movie;
   onClick: (movie: Movie) => void;
+  isSelected?: boolean;
 }
 
 export interface MovieDialogProps {
