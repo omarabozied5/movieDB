@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SearchBar from "../components/SearchBar";
-import TabSwitcher from "../components/TabSwitcher";
-import MovieGrid from "../components/MovieGrid";
-import MovieDialog from "../components/MovieDialoge";
-import RecentlyViewed from "../components/RecentlyViewed";
+import MovieGrid from "../components/movie/MovieGrid";
+import MovieDialog from "../components/movie/MovieDialoge";
+import RecentlyViewed from "../components/common/RecentlyViewed";
 import { useMovieStore } from "../store/movieStore";
+import Header from "@/components/common/Header";
+import ContentHeader from "@/components/common/ContentHeader";
+import ErrorState from "@/components/common/ErrorState";
+import LoadingState from "@/components/common/LoadingState";
+import WelcomeMessage from "@/components/common/WelcomeMessage";
+import TabSwitcher from "@/components/common/TabSwitcher";
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,14 +31,13 @@ const HomePage: React.FC = () => {
     isShowingPopular,
 
     // Actions
-    setQuery,
-    setType,
     search,
     loadMore,
     loadPopular,
     selectMovie,
     closeDialog,
     toggleRecentlyViewed,
+    setType, // Add this action for tab switching
   } = useMovieStore();
 
   // Load popular content on component mount
@@ -42,20 +45,7 @@ const HomePage: React.FC = () => {
     if (results.length === 0 && !loading && !error) {
       loadPopular();
     }
-  }, []);
-
-  // Handle search with debouncing
-  const handleSearch = () => {
-    search(true);
-  };
-
-  const handleQueryChange = (newQuery: string) => {
-    setQuery(newQuery);
-  };
-
-  const handleTabChange = (newType: "movie" | "series") => {
-    setType(newType);
-  };
+  }, [results.length, loading, error, loadPopular]);
 
   const handleMovieClick = (movie: any) => {
     selectMovie(movie);
@@ -69,8 +59,20 @@ const HomePage: React.FC = () => {
     navigate(`/movie/${movie.imdbID}`);
   };
 
-  const handleRecentlyViewedToggle = (toggleType: "movies" | "series") => {
-    toggleRecentlyViewed(toggleType);
+  const handleRecentlyViewedToggle = () => {
+    toggleRecentlyViewed("combined");
+  };
+
+  const handleTabChange = (newType: "movie" | "series") => {
+    if (setType) {
+      setType(newType);
+      // Reload content when tab changes
+      if (query) {
+        search(true); // Reset search with new type
+      } else {
+        loadPopular(); // Load popular content for new type
+      }
+    }
   };
 
   const handleRetry = () => {
@@ -81,116 +83,107 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const handleLoadPopular = () => {
+    loadPopular();
+  };
+
   return (
     <div className="min-h-screen bg-black">
-      {/* Header */}
-      <div className="bg-black border-b border-primary shadow-lg">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-white text-center mb-6">
-            MoviesDB
-          </h1>
-          <SearchBar
-            query={query}
-            onQueryChange={handleQueryChange}
-            onSearch={handleSearch}
-          />
-          <TabSwitcher activeTab={type} onTabChange={handleTabChange} />
-        </div>
-      </div>
+      {/* Header - Fixed positioning with proper spacing */}
+      <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-sm border-b border-gray-800 shadow-lg">
+        <Header />
+      </header>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        {/* Recently Viewed */}
-        <RecentlyViewed
-          movies={recentlyViewed.movies}
-          series={recentlyViewed.series}
-          title="Recently Viewed"
-          isCollapsed={recentlyViewedCollapsed.combined}
-          onToggle={() => handleRecentlyViewedToggle("combined")}
-          onMovieClick={handleMovieClick}
-        />
+      {/* Main Content - Consistent container alignment */}
+      <main className="max-w-7xl mx-auto px-4">
+        {/* Recently Viewed Section - Same alignment as other sections */}
+        {(recentlyViewed.movies.length > 0 ||
+          recentlyViewed.series.length > 0) && (
+          <section className="py-8 border-b border-gray-800/50">
+            <RecentlyViewed
+              movies={recentlyViewed.movies || []}
+              series={recentlyViewed.series || []}
+              title="Recently Viewed"
+              isCollapsed={recentlyViewedCollapsed.combined || false}
+              onToggle={handleRecentlyViewedToggle}
+              onMovieClick={handleMovieClick}
+            />
+          </section>
+        )}
 
-        {/* Content Header */}
-        {results.length > 0 && !loading && (
+        {/* Content Navigation Section */}
+        <section className="py-6">
+          {/* Tab Switcher with better spacing */}
+          <div className="mb-8">
+            <TabSwitcher
+              activeTab={type}
+              onTabChange={handleTabChange}
+              isShowingPopular={isShowingPopular}
+              query={query}
+            />
+          </div>
+
+          {/* Content Header with consistent spacing */}
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-white">
-              {isShowingPopular
-                ? `Popular ${type === "movie" ? "Movies" : "Series"}`
-                : `Search Results for "${query}"`}
-            </h2>
-            {!isShowingPopular && (
-              <p className="text-gray-400 mt-1">
-                Found {results.length} results
-              </p>
-            )}
+            <ContentHeader
+              resultsLength={results.length}
+              loading={loading}
+              isShowingPopular={isShowingPopular}
+              type={type}
+              query={query}
+            />
           </div>
-        )}
+        </section>
 
-        {/* Error State */}
-        {error && (
-          <div className="text-center py-12">
-            <div className="bg-red-900/20 border border-red-500/50 rounded-lg p-6 max-w-md mx-auto">
-              <p className="text-red-400 text-lg mb-4">{error}</p>
-              <button
-                onClick={handleRetry}
-                className="px-6 py-2 bg-primary text-black rounded-lg hover:bg-primary/90 transition-colors font-medium"
-              >
-                Try Again
-              </button>
+        {/* Main Content Area */}
+        <section className="pb-12">
+          {/* Error State - Centered with proper spacing */}
+          {error && (
+            <div className="flex justify-center items-center min-h-[400px] py-12">
+              <ErrorState error={error} onRetry={handleRetry} />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Loading State for Initial Load */}
-        {loading && results.length === 0 && (
-          <div className="text-center py-12">
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <p className="text-gray-400 ml-3">
-                {isShowingPopular
-                  ? `Loading popular ${
-                      type === "movie" ? "movies" : "series"
-                    }...`
-                  : "Searching..."}
-              </p>
+          {/* Loading State - Centered with proper spacing */}
+          {loading && results.length === 0 && (
+            <div className="flex justify-center items-center min-h-[400px] py-12">
+              <LoadingState
+                loading={loading}
+                resultsLength={results.length}
+                isShowingPopular={isShowingPopular}
+                type={type}
+              />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Movie Grid */}
-        {!error && (
-          <MovieGrid
-            movies={results}
-            loading={loading}
-            hasMore={hasMore && !isShowingPopular}
-            onLoadMore={loadMore}
-            onMovieClick={handleMovieClick}
-          />
-        )}
-
-        {/* Welcome Message */}
-        {results.length === 0 && !loading && !error && (
-          <div className="text-center py-12">
-            <div className="max-w-md mx-auto">
-              <h2 className="text-2xl font-bold text-white mb-4">
-                Welcome to MoviesDB
-              </h2>
-              <p className="text-gray-400 text-lg mb-6">
-                Discover your favorite movies and series. Search above or browse
-                our popular content.
-              </p>
-              <button
-                onClick={loadPopular}
-                className="px-6 py-3 bg-primary text-black rounded-lg hover:bg-primary/90 transition-colors font-medium"
-              >
-                Load Popular Content
-              </button>
+          {/* Movie Grid - Proper spacing and alignment */}
+          {!error && (
+            <div className="space-y-8">
+              <MovieGrid
+                movies={results}
+                loading={loading}
+                hasMore={hasMore && !isShowingPopular}
+                onLoadMore={loadMore}
+                onMovieClick={handleMovieClick}
+              />
             </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* Movie Dialog */}
+          {/* Welcome Message - Centered when no content */}
+          {!loading && results.length === 0 && !error && (
+            <div className="flex justify-center items-center min-h-[400px] py-12">
+              <WelcomeMessage
+                resultsLength={results.length}
+                loading={loading}
+                error={error}
+                onLoadPopular={handleLoadPopular}
+              />
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* Movie Dialog - Portal overlay */}
       <MovieDialog
         movie={selectedMovie}
         isOpen={isDialogOpen}

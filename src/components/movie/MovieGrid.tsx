@@ -2,7 +2,7 @@ import React from "react";
 import { useInView } from "react-intersection-observer";
 import { Loader2 } from "lucide-react";
 import MovieCard from "./MovieCard";
-import { Movie } from "../types";
+import { Movie } from "../../types";
 
 interface MovieGridProps {
   movies: Movie[];

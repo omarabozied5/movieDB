@@ -1,6 +1,6 @@
 import React from "react";
 import { Calendar, Star, Play } from "lucide-react";
-import type { MovieCardProps } from "../types";
+import type { MovieCardProps } from "../../types";
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
   const handleClick = () => {

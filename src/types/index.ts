@@ -90,6 +90,7 @@ export interface SearchState {
 export interface RecentlyViewed {
   movies: Movie[];
   series: Movie[];
+  combined?: boolean; // For collapsed state
 }
 
 // Component Props Types
@@ -114,23 +115,14 @@ export interface SearchBarProps {
 export interface TabSwitcherProps {
   activeTab: "movie" | "series";
   onTabChange: (tab: "movie" | "series") => void;
+  isShowingPopular: boolean;
+  query: string;
 }
 
-export interface RecentlyViewedProps {
-  items: Movie[];
-  title: string;
-  isCollapsed: boolean;
-  onToggle: () => void;
-  onMovieClick: (movie: Movie) => void; // Added this property
-}
-export interface RecentlyViewedState {
-  items: Movie[]; // Combined list
-  isCollapsed: boolean;
-}
-
+// Recently Viewed types
 export interface RecentlyViewedItem extends Movie {
   type: "movie" | "series";
-  viewedAt?: string; // Optional since it might not exist in your Movie type
+  viewedAt?: string;
 }
 
 export interface RecentlyViewedProps {
@@ -140,4 +132,39 @@ export interface RecentlyViewedProps {
   isCollapsed: boolean;
   onToggle: () => void;
   onMovieClick: (movie: Movie) => void;
+}
+
+export interface RecentlyViewedState {
+  movies: Movie[];
+  series: Movie[];
+  combined: boolean; // For collapsed state
+}
+
+// Store types (you might need to add these to your store)
+export interface MovieStore {
+  // State
+  query: string;
+  type: "movie" | "series";
+  results: Movie[];
+  loading: boolean;
+  hasMore: boolean;
+  error: string | null;
+  recentlyViewed: RecentlyViewed;
+  recentlyViewedCollapsed: {
+    movies?: boolean;
+    series?: boolean;
+    combined?: boolean;
+  };
+  selectedMovie: Movie | null;
+  isDialogOpen: boolean;
+  isShowingPopular: boolean;
+
+  // Actions
+  search: (reset?: boolean) => void;
+  loadMore: () => void;
+  loadPopular: () => void;
+  selectMovie: (movie: Movie) => void;
+  closeDialog: () => void;
+  toggleRecentlyViewed: (type: "movies" | "series" | "combined") => void;
+  setType?: (type: "movie" | "series") => void; // Optional, might need to add to store
 }

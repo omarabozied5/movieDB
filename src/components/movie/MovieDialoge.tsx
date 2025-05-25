@@ -1,6 +1,6 @@
 import React from "react";
 import { X, Calendar, Clock, Star, Users, Info } from "lucide-react";
-import type { MovieDialogProps } from "../types";
+import type { MovieDialogProps } from "../../types";
 
 const MovieDialog: React.FC<MovieDialogProps> = ({
   movie,
