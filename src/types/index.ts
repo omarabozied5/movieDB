@@ -25,7 +25,49 @@ export interface Movie {
   Ratings?: Rating[];
   lastViewed?: string; // Add this for recently viewed timestamp
 }
+export interface MovieRating {
+  Source: string;
+  Value: string;
+}
 
+export interface MovieReview {
+  headline: string;
+  summary_short: string;
+  byline: string;
+  publication_date: string;
+  critics_pick: number;
+  link?: {
+    url: string;
+  };
+}
+
+export interface MovieDetails {
+  Title: string;
+  Year: string;
+  Runtime?: string;
+  Genre?: string;
+  Director?: string;
+  Writer?: string;
+  Actors?: string;
+  Plot?: string;
+  Language?: string;
+  Country?: string;
+  Awards?: string;
+  Poster: string;
+  Ratings?: MovieRating[];
+  Metascore?: string;
+  imdbRating?: string;
+  imdbVotes?: string;
+  imdbID: string;
+  Type: string;
+  DVD?: string;
+  BoxOffice?: string;
+  Production?: string;
+  Website?: string;
+  Response: string;
+  Error?: string;
+  Released?: string;
+}
 export interface Rating {
   Source: string;
   Value: string;

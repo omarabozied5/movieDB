@@ -33,7 +33,6 @@ const MovieGrid: React.FC<MovieGridProps> = ({
     triggerOnce: false,
   });
 
-  // Ref for the dialog section to scroll to
   const dialogRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -42,10 +41,8 @@ const MovieGrid: React.FC<MovieGridProps> = ({
     }
   }, [inView, hasMore, loading, onLoadMore]);
 
-  // Auto-scroll to dialog when it opens
   React.useEffect(() => {
     if (isDialogOpen && selectedMovie && dialogRef.current) {
-      // Small delay to ensure the dialog is rendered
       setTimeout(() => {
         dialogRef.current?.scrollIntoView({
           behavior: "smooth",
@@ -75,12 +72,10 @@ const MovieGrid: React.FC<MovieGridProps> = ({
     );
   }
 
-  // Find the index of the selected movie to insert dropdown after its row
   const selectedMovieIndex = selectedMovie
     ? movies.findIndex((movie) => movie.imdbID === selectedMovie.imdbID)
     : -1;
 
-  // Calculate how many columns per row (5 columns as per design)
   const columnsPerRow = 5;
   const selectedRowEnd =
     selectedMovieIndex >= 0
@@ -91,7 +86,6 @@ const MovieGrid: React.FC<MovieGridProps> = ({
 
   return (
     <div className="px-6">
-      {/* Grid container with dynamic content insertion */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {movies.map((movie, index) => (
           <React.Fragment key={movie.imdbID}>
@@ -101,9 +95,8 @@ const MovieGrid: React.FC<MovieGridProps> = ({
               isSelected={selectedMovie?.imdbID === movie.imdbID}
             />
 
-            {/* Insert dropdown dialog after the end of the row containing selected movie */}
             {isDialogOpen && selectedMovie && index === selectedRowEnd && (
-              <div ref={dialogRef} className="col-span-full scroll-mt-4">
+              <div ref={dialogRef} className="col-span-full scroll-mt-4 mb-12">
                 <MovieDialog
                   movie={selectedMovie}
                   isOpen={isDialogOpen}
@@ -116,7 +109,6 @@ const MovieGrid: React.FC<MovieGridProps> = ({
         ))}
       </div>
 
-      {/* Infinite scroll trigger */}
       {hasMore && (
         <div ref={ref} className="flex justify-center py-8">
           {loading && (

@@ -14,9 +14,7 @@ import ContentHeader from "../components/common/ContentHeader";
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
 
-  // Zustand store
   const {
-    // State
     query,
     type,
     results,
@@ -39,7 +37,6 @@ const HomePage: React.FC = () => {
     setType,
   } = useMovieStore();
 
-  // Load popular content on component mount
   useEffect(() => {
     if (results.length === 0 && !loading && !error) {
       loadPopular();
@@ -47,7 +44,6 @@ const HomePage: React.FC = () => {
   }, [results.length, loading, error, loadPopular]);
 
   const handleMovieClick = (movie: any) => {
-    // Toggle selection - if same movie is clicked, close dropdown
     if (selectedMovie?.imdbID === movie.imdbID && isDialogOpen) {
       closeDialog();
     } else {
@@ -60,7 +56,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleMoreInfo = (movie: any) => {
-    closeDialog(); // Close the dropdown first
+    closeDialog();
     navigate(`/movie/${movie.imdbID}`);
   };
 
@@ -70,19 +66,19 @@ const HomePage: React.FC = () => {
 
   const handleTabChange = (newType: "movie" | "series") => {
     if (setType) {
-      closeDialog(); // Close any open dropdown when switching tabs
+      closeDialog();
       setType(newType);
-      // Reload content when tab changes
+
       if (query) {
-        search(true); // Reset search with new type
+        search(true);
       } else {
-        loadPopular(); // Load popular content for new type
+        loadPopular();
       }
     }
   };
 
   const handleRetry = () => {
-    closeDialog(); // Close dropdown on retry
+    closeDialog();
     if (isShowingPopular) {
       loadPopular();
     } else {
@@ -91,18 +87,15 @@ const HomePage: React.FC = () => {
   };
 
   const handleLoadPopular = () => {
-    closeDialog(); // Close dropdown when loading popular
+    closeDialog();
     loadPopular();
   };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#000000" }}>
-      {/* Fixed Header */}
       <Header />
 
-      {/* Main Content with top padding to account for fixed header */}
       <main className="max-w-7xl mx-auto pt-24">
-        {/* Recently Viewed Section */}
         {(recentlyViewed.movies.length > 0 ||
           recentlyViewed.series.length > 0) && (
           <section>
@@ -117,7 +110,6 @@ const HomePage: React.FC = () => {
           </section>
         )}
 
-        {/* Tab Navigation */}
         <div style={{ borderColor: "rgba(255, 214, 0, 0.2)" }}>
           <TabSwitcher
             activeTab={type}
@@ -127,12 +119,9 @@ const HomePage: React.FC = () => {
           />
         </div>
 
-        {/* Content Section */}
         <section className="px-6">
-          {/* Error State */}
           {error && <ErrorState error={error} onRetry={handleRetry} />}
 
-          {/* Loading State */}
           <LoadingState
             loading={loading}
             resultsLength={results.length}
@@ -140,7 +129,6 @@ const HomePage: React.FC = () => {
             type={type}
           />
 
-          {/* Content Header - Shows title and results count */}
           <ContentHeader
             resultsLength={results.length}
             loading={loading}
@@ -149,7 +137,6 @@ const HomePage: React.FC = () => {
             query={query}
           />
 
-          {/* Movie Grid with Dropdown Dialog */}
           {!error && (
             <MovieGrid
               movies={results}
@@ -164,7 +151,6 @@ const HomePage: React.FC = () => {
             />
           )}
 
-          {/* Welcome Message */}
           <WelcomeMessage
             resultsLength={results.length}
             loading={loading}

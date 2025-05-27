@@ -61,7 +61,7 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
   };
 
   return (
-    <div className="px-6 py-4">
+    <div className="px-6 py-2">
       {/* Section Header */}
       <div className="mb-4">
         <div

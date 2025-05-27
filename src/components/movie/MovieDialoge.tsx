@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { Star, Film } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Star } from "lucide-react";
 import type { MovieDialogProps } from "../../types";
 
 const MovieDialog: React.FC<MovieDialogProps> = ({
@@ -9,6 +9,7 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
   onMoreInfo,
 }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -27,12 +28,15 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
     };
 
     if (isOpen) {
+      setIsAnimating(true);
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleEscape);
       return () => {
         document.removeEventListener("mousedown", handleClickOutside);
         document.removeEventListener("keydown", handleEscape);
       };
+    } else {
+      setIsAnimating(false);
     }
   }, [isOpen, onClose]);
 
@@ -44,11 +48,31 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
 
   return (
     <div className="col-span-full">
+      <div className="flex justify-center ">
+        <div
+          className="w-0 h-0 transition-all duration-300 ease-out"
+          style={{
+            borderLeft: "25px solid transparent",
+            borderRight: "25px solid transparent",
+            borderBottom: "25px solid #FFD700",
+            transform: isAnimating
+              ? "translateY(0) scale(1)"
+              : "translateY(-10px) scale(0.8)",
+            opacity: isAnimating ? 1 : 0,
+          }}
+        />
+      </div>
+
       <div
         ref={dialogRef}
-        className="relative mx-4 my-4 overflow-hidden shadow-2xl animate-slide-in-up bg-gray-900"
+        className="relative mx-4 overflow-hidden shadow-2xl bg-gray-900 transition-all duration-500 ease-out transform"
         style={{
-          border: "3px solid #FFD700",
+          border: "4px solid #FFD700",
+          minHeight: "400px",
+          transform: isAnimating
+            ? "translateY(0) scale(1)"
+            : "translateY(-20px) scale(0.95)",
+          opacity: isAnimating ? 1 : 0,
         }}
       >
         {/* Background poster image */}
@@ -60,50 +84,40 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
             })`,
           }}
         >
-          {/* Dark overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/85 to-black/60" />
         </div>
 
-        {/* Content container */}
         <div className="relative z-10 p-8 min-h-[400px] flex flex-col">
-          {/* Top section - Title and Bio */}
           <div className="mb-8">
-            {/* Title */}
             <div>
-              <h2 className="text-2xl font-bold text-white mb-6 leading-tight">
+              <h1
+                className="font-bold text-white mb-6 leading-tight"
+                style={{
+                  fontFamily: "Roboto, sans-serif",
+                  fontSize: "48px",
+                  textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+                }}
+              >
                 {movie.Title}
-              </h2>
+              </h1>
 
-              {/* Short Bio/Plot */}
               {movie.Plot && movie.Plot !== "N/A" && (
-                <p className="text-gray-300 text-lg leading-relaxed mb-8">
-                  {movie.Plot}
-                </p>
+                <div className="mb-6">
+                  <span className="text-white font-bold text-lg block mb-3">
+                    Short Bio:
+                  </span>
+                  <p className="text-gray-300 text-base leading-relaxed">
+                    {movie.Plot}
+                  </p>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Bottom section - Release date and details grid */}
-          <div className="flex justify-between items-start">
-            {/* Left side - Release date and Rating */}
-            <div className="flex-1 max-w-xs">
-              {/* Release Date
-              <div className="mb-6">
-                <span className="text-yellow-400 font-bold text-2xl block mb-2">
-                  {movie.Released && movie.Released !== "N/A"
-                    ? new Date(movie.Released)
-                        .toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })
-                        .toUpperCase()
-                    : movie.Year}
-                </span>
-              </div> */}
-
-              {/* Rating with stars */}
+          <div className="flex justify-between items-start mt-auto">
+            <div className="flex-1 max-w-xs flex flex-col h-full">
               <div className="mb-8">
-                <span className="text-white font-bold text-xl block mb-2">
+                <span className="text-white font-bold text-xl block mb-3">
                   Rating
                 </span>
                 <div className="flex items-center gap-1">
@@ -116,11 +130,9 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
                     return (
                       <Star
                         key={i}
-                        className={`w-8 h-8 ${
-                          isFilled || isHalf ? "text-primary" : "text-primary"
-                        }`}
+                        className="w-8 h-8 text-primary"
                         style={{
-                          fill: isFilled || isHalf ? "#FFD600" : "transparent",
+                          fill: isFilled || isHalf ? "#FFD700" : "transparent",
                         }}
                       />
                     );
@@ -128,20 +140,18 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
                 </div>
               </div>
 
-              {/* More Info Button */}
-              <button
-                onClick={handleMoreInfo}
-                className="text-black px-4 py-3 font-bold text-sm hover:opacity-90 transition-all duration-200 flex items-center gap-4 rounded mt-4 hover:scale-110"
-                style={{ background: "#FFD600" }}
-              >
-                <Film className="w-4 h-4" />
-                More Info
-              </button>
+              <div className="mt-auto">
+                <button
+                  onClick={handleMoreInfo}
+                  className="text-black px-12 py-3 font-bold text-base hover:opacity-90 transition-all duration-200 flex items-center gap-3 rounded mt-16 hover:scale-105"
+                  style={{ background: "#FFD700" }}
+                >
+                  More Info
+                </button>
+              </div>
             </div>
 
-            {/* Right side - Details grid */}
-            <div className="flex-1 grid grid-cols-4 gap-x-12 gap-y-6 text-lg">
-              {/* Genre */}
+            <div className="flex-1 grid grid-cols-4 gap-x-8 gap-y-6 text-base">
               {movie.Genre && movie.Genre !== "N/A" && (
                 <div>
                   <span className="text-white font-bold text-xl block mb-3">
@@ -153,7 +163,6 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
                 </div>
               )}
 
-              {/* Released */}
               {movie.Released && movie.Released !== "N/A" && (
                 <div>
                   <span className="text-white font-bold text-xl block mb-3">
@@ -163,7 +172,6 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
                 </div>
               )}
 
-              {/* Directors */}
               {movie.Director && movie.Director !== "N/A" && (
                 <div>
                   <span className="text-white font-bold text-xl block mb-3">
