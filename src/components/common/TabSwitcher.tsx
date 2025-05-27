@@ -13,7 +13,7 @@ const TabSwitcher: React.FC<ContentTabSwitcherProps> = ({
 }) => {
   return (
     <div className="px-6 py-4 border-b border-gray-800/30">
-      <div className="flex gap-8">
+      <div className="flex gap-28">
         <button
           onClick={() => onTabChange("movie")}
           className={`text-lg font-medium transition-colors relative pb-1 ${
@@ -24,7 +24,7 @@ const TabSwitcher: React.FC<ContentTabSwitcherProps> = ({
         >
           Movies
           {activeTab === "movie" && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>
           )}
         </button>
 
@@ -38,7 +38,7 @@ const TabSwitcher: React.FC<ContentTabSwitcherProps> = ({
         >
           Series
           {activeTab === "series" && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>
           )}
         </button>
       </div>

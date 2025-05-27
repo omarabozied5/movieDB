@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Star, Calendar, Globe, Clock, Award, Users, Film } from "lucide-react";
+import { Star, Film } from "lucide-react";
 import type { MovieDialogProps } from "../../types";
 
 const MovieDialog: React.FC<MovieDialogProps> = ({
@@ -46,137 +46,153 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
     <div className="col-span-full">
       <div
         ref={dialogRef}
-        className="bg-gray-900/95 backdrop-blur-md rounded-xl border border-yellow-400/30 shadow-2xl mx-4 my-4 overflow-hidden animate-slide-in-up"
+        className="relative mx-4 my-4 overflow-hidden shadow-2xl animate-slide-in-up bg-gray-900"
+        style={{
+          border: "3px solid #FFD700",
+        }}
       >
-        {/* Main content container */}
-        <div className="flex flex-col lg:flex-row">
-          {/* Movie poster section */}
-          <div className="lg:w-1/3 p-6 flex justify-center lg:justify-start">
-            <div className="relative">
-              <img
-                src={
-                  movie.Poster !== "N/A"
-                    ? movie.Poster
-                    : "/api/placeholder/300/450"
-                }
-                alt={movie.Title}
-                className="w-48 h-72 object-cover rounded-lg shadow-xl"
-              />
-              {movie.imdbRating && (
-                <div className="absolute -top-2 -right-2 bg-yellow-400 text-black px-2 py-1 rounded-full text-sm font-bold flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-current" />
-                  {movie.imdbRating}
-                </div>
+        {/* Background poster image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${
+              movie.Poster !== "N/A" ? movie.Poster : "/api/placeholder/800/600"
+            })`,
+          }}
+        >
+          {/* Dark overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-black/70" />
+        </div>
+
+        {/* Content container */}
+        <div className="relative z-10 p-8 min-h-[400px] flex flex-col">
+          {/* Top section - Title and Bio */}
+          <div className="mb-8">
+            {/* Title */}
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-6 leading-tight">
+                {movie.Title}
+              </h2>
+
+              {/* Short Bio/Plot */}
+              {movie.Plot && movie.Plot !== "N/A" && (
+                <p className="text-gray-300 text-lg leading-relaxed mb-8">
+                  {movie.Plot}
+                </p>
               )}
             </div>
           </div>
 
-          {/* Movie details section */}
-          <div className="lg:w-2/3 p-6 space-y-4">
-            {/* Title and basic info */}
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {movie.Title}
-              </h2>
+          {/* Bottom section - Release date and details grid */}
+          <div className="flex justify-between items-start">
+            {/* Left side - Release date and Rating */}
+            <div className="flex-1 max-w-xs">
+              {/* Release Date
+              <div className="mb-6">
+                <span className="text-yellow-400 font-bold text-2xl block mb-2">
+                  {movie.Released && movie.Released !== "N/A"
+                    ? new Date(movie.Released)
+                        .toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })
+                        .toUpperCase()
+                    : movie.Year}
+                </span>
+              </div> */}
 
-              {/* Meta information */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300 mb-4">
+              {/* Rating with stars */}
+              <div className="mb-8">
+                <span className="text-white font-bold text-xl block mb-2">
+                  Rating
+                </span>
                 <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  <span>{movie.Year}</span>
-                </div>
+                  {[...Array(5)].map((_, i) => {
+                    const rating = parseFloat(movie.imdbRating || "0") / 2;
+                    const isFilled = i < Math.floor(rating);
+                    const isHalf =
+                      i === Math.floor(rating) && rating % 1 >= 0.5;
 
-                {movie.Runtime && (
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    <span>{movie.Runtime}</span>
-                  </div>
-                )}
-
-                <div className="px-2 py-1 bg-yellow-400 text-black text-xs rounded-full font-semibold uppercase tracking-wide">
-                  {movie.Type}
+                    return (
+                      <Star
+                        key={i}
+                        className={`w-8 h-8 ${
+                          isFilled || isHalf ? "text-primary" : "text-primary"
+                        }`}
+                        style={{
+                          fill: isFilled || isHalf ? "#FFD600" : "transparent",
+                        }}
+                      />
+                    );
+                  })}
                 </div>
               </div>
+
+              {/* More Info Button */}
+              <button
+                onClick={handleMoreInfo}
+                className="text-black px-4 py-3 font-bold text-sm hover:opacity-90 transition-all duration-200 flex items-center gap-4 rounded mt-4 hover:scale-110"
+                style={{ background: "#FFD600" }}
+              >
+                <Film className="w-4 h-4" />
+                More Info
+              </button>
             </div>
 
-            {/* Plot/Synopsis */}
-            {movie.Plot && movie.Plot !== "N/A" && (
-              <div>
-                <h3 className="text-white font-semibold mb-2 text-sm uppercase tracking-wide">
-                  Short Bio:
-                </h3>
-                <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">
-                  {movie.Plot}
-                </p>
-              </div>
-            )}
-
-            {/* Details grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            {/* Right side - Details grid */}
+            <div className="flex-1 grid grid-cols-4 gap-x-12 gap-y-6 text-lg">
               {/* Genre */}
               {movie.Genre && movie.Genre !== "N/A" && (
                 <div>
-                  <span className="text-yellow-400 font-semibold">Genre</span>
-                  <p className="text-gray-300">{movie.Genre}</p>
+                  <span className="text-white font-bold text-xl block mb-3">
+                    Genre
+                  </span>
+                  <span className="bg-gray-600 text-white px-4 py-2 rounded text-sm font-semibold">
+                    {movie.Genre.split(",")[0].trim()}
+                  </span>
                 </div>
               )}
 
               {/* Released */}
               {movie.Released && movie.Released !== "N/A" && (
                 <div>
-                  <span className="text-yellow-400 font-semibold">
+                  <span className="text-white font-bold text-xl block mb-3">
                     Released
                   </span>
-                  <p className="text-gray-300">{movie.Released}</p>
+                  <span className="text-white text-base">{movie.Released}</span>
                 </div>
               )}
 
               {/* Directors */}
               {movie.Director && movie.Director !== "N/A" && (
                 <div>
-                  <span className="text-yellow-400 font-semibold">
+                  <span className="text-white font-bold text-xl block mb-3">
                     Directors
                   </span>
-                  <p className="text-gray-300">{movie.Director}</p>
+                  <span className="text-white text-base">{movie.Director}</span>
                 </div>
               )}
 
               {/* Language */}
               {movie.Language && movie.Language !== "N/A" && (
                 <div>
-                  <span className="text-yellow-400 font-semibold">
+                  <span className="text-white font-bold text-xl block mb-3">
                     Language
                   </span>
-                  <p className="text-gray-300">{movie.Language}</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {movie.Language.split(",")
+                      .slice(0, 2)
+                      .map((lang, i) => (
+                        <span
+                          key={i}
+                          className="bg-yellow-400 text-primary px-3 py-1 rounded text-sm font-bold"
+                        >
+                          {lang.trim()}
+                        </span>
+                      ))}
+                  </div>
                 </div>
               )}
-            </div>
-
-            {/* Cast */}
-            {movie.Actors && movie.Actors !== "N/A" && (
-              <div>
-                <h3 className="text-yellow-400 font-semibold mb-1">Cast</h3>
-                <p className="text-gray-300 text-sm">{movie.Actors}</p>
-              </div>
-            )}
-
-            {/* Awards */}
-            {movie.Awards && movie.Awards !== "N/A" && (
-              <div>
-                <h3 className="text-yellow-400 font-semibold mb-1">Awards</h3>
-                <p className="text-gray-300 text-sm">{movie.Awards}</p>
-              </div>
-            )}
-
-            {/* Action button */}
-            <div className="pt-4">
-              <button
-                onClick={handleMoreInfo}
-                className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold transition-colors duration-200 flex items-center gap-2"
-              >
-                <Film className="w-4 h-4" />
-                More Info
-              </button>
             </div>
           </div>
         </div>

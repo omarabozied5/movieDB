@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import MovieCard from "../movie/MovieCard";
 import type { Movie, RecentlyViewedItem } from "../../types";
@@ -21,7 +21,6 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
   onMovieClick,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showArrows, setShowArrows] = useState(false);
 
   // Combine movies and series with type indicators
   const combinedItems: RecentlyViewedItem[] = [
@@ -74,7 +73,7 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
           </h2>
           <div className="text-gray-400 group-hover:text-white transition-colors">
             <ChevronUp
-              className={`w-8 h-8 transition-transform ${
+              className={`w-12 h-12 transition-transform ${
                 isCollapsed ? "" : "rotate-180"
               }`}
             />
@@ -83,32 +82,22 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
       </div>
 
       {!isCollapsed && (
-        <div
-          className="relative"
-          onMouseEnter={() => setShowArrows(true)}
-          onMouseLeave={() => setShowArrows(false)}
-        >
+        <div className="relative">
           {/* Left Arrow */}
           <button
             onClick={scrollLeft}
-            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-opacity duration-300 ${
-              showArrows ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 text-primary p-2 rounded-full transition-opacity duration-300 `}
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-32 h-32" />
           </button>
-
           {/* Right Arrow */}
           <button
             onClick={scrollRight}
-            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-opacity duration-300 ${
-              showArrows ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 text-primary p-2 rounded-full transition-opacity duration-300 `}
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-32 h-32" />
           </button>
-
-          {/* Scrollable Container - Matching the design's horizontal layout */}
+          {/* Scrollable Container - Matching the design's horizontal layout */}{" "}
           <div
             ref={scrollContainerRef}
             className="flex gap-3 overflow-x-auto pb-2 scroll-smooth scrollbar-hide"

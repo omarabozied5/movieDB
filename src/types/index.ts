@@ -23,6 +23,7 @@ export interface Movie {
   imdbVotes?: string;
   DVD?: string;
   Ratings?: Rating[];
+  lastViewed?: string; // Add this for recently viewed timestamp
 }
 
 export interface Rating {
@@ -93,11 +94,13 @@ export interface RecentlyViewed {
   combined?: boolean; // For collapsed state
 }
 
-// Component Props Types
+// Component Props Types with Size Support
 export interface MovieCardProps {
   movie: Movie;
   onClick: (movie: Movie) => void;
   isSelected?: boolean;
+  size?: "small" | "medium" | "large";
+  showTitle?: boolean;
 }
 
 export interface MovieDialogProps {
@@ -141,7 +144,22 @@ export interface RecentlyViewedState {
   combined: boolean; // For collapsed state
 }
 
-// Store types (you might need to add these to your store)
+// Enhanced Movie Grid Props
+export interface MovieGridProps {
+  movies: Movie[];
+  loading: boolean;
+  hasMore: boolean;
+  onLoadMore: () => void;
+  onMovieClick: (movie: Movie) => void;
+  selectedMovie?: Movie | null;
+  isDialogOpen: boolean;
+  onDialogClose: () => void;
+  onMoreInfo: (movie: Movie) => void;
+  isShowingPopular?: boolean;
+  cardSize?: "small" | "medium" | "large";
+}
+
+// Store types
 export interface MovieStore {
   // State
   query: string;
@@ -167,5 +185,5 @@ export interface MovieStore {
   selectMovie: (movie: Movie) => void;
   closeDialog: () => void;
   toggleRecentlyViewed: (type: "movies" | "series" | "combined") => void;
-  setType?: (type: "movie" | "series") => void; // Optional, might need to add to store
+  setType?: (type: "movie" | "series") => void;
 }

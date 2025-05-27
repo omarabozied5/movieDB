@@ -4,11 +4,12 @@ import { useNavigate } from "react-router-dom";
 import MovieGrid from "../components/movie/MovieGrid";
 import RecentlyViewed from "../components/common/RecentlyViewed";
 import { useMovieStore } from "../store/movieStore";
-import Header from "@/components/common/Header";
-import ErrorState from "@/components/common/ErrorState";
-import LoadingState from "@/components/common/LoadingState";
-import WelcomeMessage from "@/components/common/WelcomeMessage";
-import TabSwitcher from "@/components/common/TabSwitcher";
+import Header from "../components/common/Header";
+import ErrorState from "../components/common/ErrorState";
+import LoadingState from "../components/common/LoadingState";
+import WelcomeMessage from "../components/common/WelcomeMessage";
+import TabSwitcher from "../components/common/TabSwitcher";
+import ContentHeader from "../components/common/ContentHeader";
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -95,18 +96,16 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Header - Fixed positioning */}
-      <header className="sticky top-0 z-40 bg-black border-b border-gray-800">
-        <Header />
-      </header>
+    <div className="min-h-screen" style={{ backgroundColor: "#000000" }}>
+      {/* Fixed Header */}
+      <Header />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto">
+      {/* Main Content with top padding to account for fixed header */}
+      <main className="max-w-7xl mx-auto pt-24">
         {/* Recently Viewed Section */}
         {(recentlyViewed.movies.length > 0 ||
           recentlyViewed.series.length > 0) && (
-          <section className="border-b border-gray-800/50">
+          <section>
             <RecentlyViewed
               movies={recentlyViewed.movies || []}
               series={recentlyViewed.series || []}
@@ -119,33 +118,36 @@ const HomePage: React.FC = () => {
         )}
 
         {/* Tab Navigation */}
-        <TabSwitcher
-          activeTab={type}
-          onTabChange={handleTabChange}
-          isShowingPopular={isShowingPopular}
-          query={query}
-        />
+        <div style={{ borderColor: "rgba(255, 214, 0, 0.2)" }}>
+          <TabSwitcher
+            activeTab={type}
+            onTabChange={handleTabChange}
+            isShowingPopular={isShowingPopular}
+            query={query}
+          />
+        </div>
 
         {/* Content Section */}
-        <section className="min-h-screen">
+        <section className="px-6">
           {/* Error State */}
-          {error && (
-            <div className="flex justify-center items-center min-h-[400px] py-12">
-              <ErrorState error={error} onRetry={handleRetry} />
-            </div>
-          )}
+          {error && <ErrorState error={error} onRetry={handleRetry} />}
 
           {/* Loading State */}
-          {loading && results.length === 0 && (
-            <div className="flex justify-center items-center min-h-[400px] py-12">
-              <LoadingState
-                loading={loading}
-                resultsLength={results.length}
-                isShowingPopular={isShowingPopular}
-                type={type}
-              />
-            </div>
-          )}
+          <LoadingState
+            loading={loading}
+            resultsLength={results.length}
+            isShowingPopular={isShowingPopular}
+            type={type}
+          />
+
+          {/* Content Header - Shows title and results count */}
+          <ContentHeader
+            resultsLength={results.length}
+            loading={loading}
+            isShowingPopular={isShowingPopular}
+            type={type}
+            query={query}
+          />
 
           {/* Movie Grid with Dropdown Dialog */}
           {!error && (
@@ -163,16 +165,12 @@ const HomePage: React.FC = () => {
           )}
 
           {/* Welcome Message */}
-          {!loading && results.length === 0 && !error && (
-            <div className="flex justify-center items-center min-h-[400px] py-12">
-              <WelcomeMessage
-                resultsLength={results.length}
-                loading={loading}
-                error={error}
-                onLoadPopular={handleLoadPopular}
-              />
-            </div>
-          )}
+          <WelcomeMessage
+            resultsLength={results.length}
+            loading={loading}
+            error={error}
+            onLoadPopular={handleLoadPopular}
+          />
         </section>
       </main>
     </div>

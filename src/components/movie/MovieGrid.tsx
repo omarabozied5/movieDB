@@ -33,11 +33,28 @@ const MovieGrid: React.FC<MovieGridProps> = ({
     triggerOnce: false,
   });
 
+  // Ref for the dialog section to scroll to
+  const dialogRef = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     if (inView && hasMore && !loading) {
       onLoadMore();
     }
   }, [inView, hasMore, loading, onLoadMore]);
+
+  // Auto-scroll to dialog when it opens
+  React.useEffect(() => {
+    if (isDialogOpen && selectedMovie && dialogRef.current) {
+      // Small delay to ensure the dialog is rendered
+      setTimeout(() => {
+        dialogRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest",
+        });
+      }, 100);
+    }
+  }, [isDialogOpen, selectedMovie]);
 
   if (movies.length === 0 && loading) {
     return (
@@ -86,12 +103,14 @@ const MovieGrid: React.FC<MovieGridProps> = ({
 
             {/* Insert dropdown dialog after the end of the row containing selected movie */}
             {isDialogOpen && selectedMovie && index === selectedRowEnd && (
-              <MovieDialog
-                movie={selectedMovie}
-                isOpen={isDialogOpen}
-                onClose={onDialogClose}
-                onMoreInfo={onMoreInfo}
-              />
+              <div ref={dialogRef} className="col-span-full scroll-mt-4">
+                <MovieDialog
+                  movie={selectedMovie}
+                  isOpen={isDialogOpen}
+                  onClose={onDialogClose}
+                  onMoreInfo={onMoreInfo}
+                />
+              </div>
             )}
           </React.Fragment>
         ))}

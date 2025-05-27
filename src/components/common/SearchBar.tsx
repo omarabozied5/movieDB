@@ -29,7 +29,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
             onChange={(e) => onQueryChange(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Search"
-            className="w-full px-4 py-3 pl-12 bg-transparent border-none border-b-2 border-b-gray-700 text-white text-base placeholder-gray-400 focus:outline-none focus:border-b-gray-500 transition-colors min-w-0"
+            className="w-full px-4 py-3 pr-12 text-white text-base placeholder-gray-400 focus:outline-none transition-colors duration-200 min-w-0"
+            style={{
+              background: "transparent",
+              backgroundColor: "transparent",
+              border: "none",
+              borderBottom: "1px solid rgb(75, 85, 99)",
+              borderRadius: "0",
+              boxShadow: "none",
+              outline: "none",
+            }}
           />
         </div>
       </form>

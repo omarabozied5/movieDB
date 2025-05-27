@@ -18,12 +18,15 @@ const MovieCard: React.FC<MovieCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`group cursor-pointer relative overflow-hidden rounded-lg transition-all duration-300 hover:scale-105 ${
-        isSelected ? "ring-2 ring-yellow-400" : ""
+      className={`group cursor-pointer relative overflow-hidden  transition-all duration-300 hover:scale-105 ${
+        isSelected ? "ring-2" : ""
       }`}
+      style={{
+        borderColor: isSelected ? "#FFD600" : "transparent",
+      }}
     >
       {/* Aspect ratio container for responsive poster */}
-      <div className="aspect-[2/3] relative overflow-hidden rounded-lg bg-gray-800">
+      <div className="aspect-[2/3] relative overflow-hidden  bg-gray-800">
         {/* Movie Poster */}
         <img
           src={
@@ -40,37 +43,47 @@ const MovieCard: React.FC<MovieCardProps> = ({
         {/* Rating badge - top right */}
         <div className="absolute top-2 right-2 z-10">
           {movie.imdbRating ? (
-            <div className="flex items-center gap-1 px-2 py-1 bg-black/80 backdrop-blur-sm rounded-md text-xs">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-white font-semibold">
-                {movie.imdbRating}
-              </span>
+            <div
+              className="flex items-center gap-1 px-2 py-1 backdrop-blur-sm rounded-md text-xs font-semibold"
+              style={{ backgroundColor: "#FFD600", color: "#000000" }}
+            >
+              <Star className="w-3 h-3 fill-current" />
+              <span>{movie.imdbRating}</span>
             </div>
           ) : (
-            <div className="px-2 py-1 bg-gray-800/90 backdrop-blur-sm rounded-md text-xs">
-              <span className="text-white font-medium uppercase text-[10px] tracking-wider">
-                {movie.Type}
-              </span>
+            <div
+              className="px-2 py-1 bg-black/80 backdrop-blur-sm rounded-md text-xs font-medium uppercase tracking-wider"
+              style={{ color: "#FFD600" }}
+            >
+              <span>{movie.Type}</span>
             </div>
           )}
         </div>
 
         {/* Movie title overlay - bottom */}
-        <div className="absolute bottom-0 left-0 right-0 p-3">
-          <h3 className="font-semibold text-white text-sm leading-tight line-clamp-2 group-hover:text-yellow-300 transition-colors">
+        {/* <div className="absolute bottom-0 left-0 right-0 p-3">
+          <h2
+            className={`font-semibold left-1/2 text-white text-sm leading-tight line-clamp-2 text-center transition-colors ${
+              isSelected ? "" : "group-hover:text-yellow-300"
+            }`}
+            style={isSelected ? { color: "#FFD600" } : {}}
+          >
             {movie.Title}
-          </h3>
-          <div className="text-gray-300 text-xs mt-1 opacity-90">
-            {movie.Year}
-          </div>
-        </div>
+          </h2>
+        </div> */}
 
-        {/* Hover overlay with yellow accent */}
+        {/* Hover overlay with yellow gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         {/* Selection indicator */}
         {isSelected && (
-          <div className="absolute inset-0 bg-yellow-400/20 border-2 border-yellow-400 rounded-lg" />
+          <div
+            className="absolute inset-0 rounded-lg"
+            style={{
+              backgroundColor: "rgba(255, 214, 0, 0.2)",
+              border: "2px solid #FFD600",
+            }}
+          />
         )}
       </div>
     </div>
