@@ -22,7 +22,6 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Combine movies and series with type indicators
   const combinedItems: RecentlyViewedItem[] = [
     ...(movies || []).map(
       (item): RecentlyViewedItem => ({
@@ -61,8 +60,7 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
   };
 
   return (
-    <div className="px-6 py-2">
-      {/* Section Header */}
+    <div className="px-6">
       <div className="mb-4">
         <div
           onClick={onToggle}
@@ -97,7 +95,6 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
           >
             <ChevronRight className="w-32 h-32" />
           </button>
-          {/* Scrollable Container - Matching the design's horizontal layout */}{" "}
           <div
             ref={scrollContainerRef}
             className="flex gap-3 overflow-x-auto pb-2 scroll-smooth scrollbar-hide"

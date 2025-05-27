@@ -27,7 +27,6 @@ const HomePage: React.FC = () => {
     isDialogOpen,
     isShowingPopular,
 
-    // Actions
     search,
     loadMore,
     loadPopular,
@@ -95,7 +94,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen" style={{ backgroundColor: "#000000" }}>
       <Header />
 
-      <main className="max-w-7xl mx-auto pt-24">
+      <main className="max-w-7xl mx-auto pt-2">
         {(recentlyViewed.movies.length > 0 ||
           recentlyViewed.series.length > 0) && (
           <section>

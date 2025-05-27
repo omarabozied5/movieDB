@@ -313,7 +313,6 @@ export const getMovieReviews = async (
         );
       }
       if (error.response?.status === 404) {
-        // Return empty results for 404 instead of throwing
         return {
           status: "OK",
           copyright: "",
@@ -326,8 +325,6 @@ export const getMovieReviews = async (
 
     console.error("Error fetching movie reviews:", error);
 
-    // Return empty results instead of throwing for review errors
-    // This prevents the entire movie details page from failing
     return {
       status: "OK",
       copyright: "",

@@ -2,11 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import type { MovieDialogProps } from "../../types";
 
-const MovieDialog: React.FC<MovieDialogProps> = ({
+interface ExtendedMovieDialogProps extends MovieDialogProps {
+  selectedMovieIndex?: number;
+  columnsPerRow?: number;
+}
+
+const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
   movie,
   isOpen,
   onClose,
   onMoreInfo,
+  selectedMovieIndex = 0,
+  columnsPerRow = 5,
 }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -46,21 +53,39 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
     onMoreInfo(movie);
   };
 
+  const columnInRow = selectedMovieIndex % columnsPerRow;
+  const pointerLeftPosition = `${
+    (columnInRow / columnsPerRow) * 100 + 100 / columnsPerRow / 2
+  }%`;
+
   return (
     <div className="col-span-full">
-      <div className="flex justify-center ">
+      <div
+        className="flex justify-start relative"
+        style={{ paddingLeft: "1.5rem" }}
+      >
         <div
-          className="w-0 h-0 transition-all duration-300 ease-out"
+          className="transition-all duration-300 ease-out relative"
           style={{
-            borderLeft: "25px solid transparent",
-            borderRight: "25px solid transparent",
-            borderBottom: "25px solid #FFD700",
-            transform: isAnimating
-              ? "translateY(0) scale(1)"
-              : "translateY(-10px) scale(0.8)",
+            left: pointerLeftPosition,
+            transform: `translateX(-50%) ${
+              isAnimating
+                ? "translateY(0) scale(1)"
+                : "translateY(-10px) scale(0.8)"
+            }`,
             opacity: isAnimating ? 1 : 0,
           }}
-        />
+        >
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: "20px solid transparent",
+              borderRight: "20px solid transparent",
+              borderBottom: "20px solid #FFD700",
+            }}
+          />
+        </div>
       </div>
 
       <div
@@ -75,7 +100,6 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
           opacity: isAnimating ? 1 : 0,
         }}
       >
-        {/* Background poster image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
@@ -181,7 +205,6 @@ const MovieDialog: React.FC<MovieDialogProps> = ({
                 </div>
               )}
 
-              {/* Language */}
               {movie.Language && movie.Language !== "N/A" && (
                 <div>
                   <span className="text-white font-bold text-xl block mb-3">

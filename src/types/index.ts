@@ -1,4 +1,4 @@
-// Movie and Series Types
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Movie {
   imdbID: string;
   Title: string;
@@ -23,7 +23,7 @@ export interface Movie {
   imdbVotes?: string;
   DVD?: string;
   Ratings?: Rating[];
-  lastViewed?: string; // Add this for recently viewed timestamp
+  lastViewed?: string;
 }
 export interface MovieRating {
   Source: string;
@@ -133,13 +133,12 @@ export interface SearchState {
 export interface RecentlyViewed {
   movies: Movie[];
   series: Movie[];
-  combined?: boolean; // For collapsed state
+  combined?: boolean;
 }
 
-// Component Props Types with Size Support
 export interface MovieCardProps {
   movie: Movie;
-  onClick: (movie: Movie) => void;
+  onClick: (movie: any, cardElement?: HTMLElement) => void;
   isSelected?: boolean;
   size?: "small" | "medium" | "large";
   showTitle?: boolean;
@@ -183,10 +182,9 @@ export interface RecentlyViewedProps {
 export interface RecentlyViewedState {
   movies: Movie[];
   series: Movie[];
-  combined: boolean; // For collapsed state
+  combined: boolean;
 }
 
-// Enhanced Movie Grid Props
 export interface MovieGridProps {
   movies: Movie[];
   loading: boolean;
@@ -201,7 +199,6 @@ export interface MovieGridProps {
   cardSize?: "small" | "medium" | "large";
 }
 
-// Store types
 export interface MovieStore {
   // State
   query: string;

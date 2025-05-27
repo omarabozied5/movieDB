@@ -25,9 +25,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
         borderColor: isSelected ? "#FFD600" : "transparent",
       }}
     >
-      {/* Aspect ratio container for responsive poster */}
       <div className="aspect-[2/3] relative overflow-hidden  bg-gray-800">
-        {/* Movie Poster */}
         <img
           src={
             movie.Poster !== "N/A" ? movie.Poster : "/api/placeholder/280/420"
@@ -37,10 +35,8 @@ const MovieCard: React.FC<MovieCardProps> = ({
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
 
-        {/* Overlay gradient for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20" />
 
-        {/* Rating badge - top right */}
         <div className="absolute top-2 right-2 z-10">
           {movie.imdbRating ? (
             <div
@@ -60,7 +56,6 @@ const MovieCard: React.FC<MovieCardProps> = ({
           )}
         </div>
 
-        {/* Movie title overlay - bottom */}
         {/* <div className="absolute bottom-0 left-0 right-0 p-3">
           <h2
             className={`font-semibold left-1/2 text-white text-sm leading-tight line-clamp-2 text-center transition-colors ${
@@ -72,10 +67,8 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </h2>
         </div> */}
 
-        {/* Hover overlay with yellow gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Selection indicator */}
         {isSelected && (
           <div
             className="absolute inset-0 rounded-lg"

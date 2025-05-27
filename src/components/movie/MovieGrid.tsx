@@ -77,11 +77,14 @@ const MovieGrid: React.FC<MovieGridProps> = ({
     : -1;
 
   const columnsPerRow = 5;
-  const selectedRowEnd =
+  const selectedMovieRow =
     selectedMovieIndex >= 0
-      ? Math.floor(selectedMovieIndex / columnsPerRow) * columnsPerRow +
-        columnsPerRow -
-        1
+      ? Math.floor(selectedMovieIndex / columnsPerRow)
+      : -1;
+
+  const rowEndIndex =
+    selectedMovieRow >= 0
+      ? Math.min((selectedMovieRow + 1) * columnsPerRow - 1, movies.length - 1)
       : -1;
 
   return (
@@ -95,13 +98,18 @@ const MovieGrid: React.FC<MovieGridProps> = ({
               isSelected={selectedMovie?.imdbID === movie.imdbID}
             />
 
-            {isDialogOpen && selectedMovie && index === selectedRowEnd && (
-              <div ref={dialogRef} className="col-span-full scroll-mt-4 mb-12">
+            {isDialogOpen && selectedMovie && index === rowEndIndex && (
+              <div
+                ref={dialogRef}
+                className="col-span-full mt-4 scroll-mt-4 mb-16"
+              >
                 <MovieDialog
                   movie={selectedMovie}
                   isOpen={isDialogOpen}
                   onClose={onDialogClose}
                   onMoreInfo={onMoreInfo}
+                  selectedMovieIndex={selectedMovieIndex}
+                  columnsPerRow={columnsPerRow}
                 />
               </div>
             )}
