@@ -105,7 +105,11 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
                 key={`${item.type}-${item.imdbID}`}
                 className="flex-shrink-0 w-36"
               >
-                <MovieCard movie={item} onClick={onMovieClick} />
+                <MovieCard
+                  movie={item}
+                  onClick={onMovieClick}
+                  showTitle={false} // Hide titles in recently viewed section
+                />
               </div>
             ))}
           </div>

@@ -2,10 +2,16 @@ import React from "react";
 import { Star } from "lucide-react";
 import type { MovieCardProps } from "../../types";
 
-const MovieCard: React.FC<MovieCardProps> = ({
+// Extend the props to include showTitle option
+interface ExtendedMovieCardProps extends MovieCardProps {
+  showTitle?: boolean;
+}
+
+const MovieCard: React.FC<ExtendedMovieCardProps> = ({
   movie,
   onClick,
   isSelected,
+  showTitle = true, // Default to true to show title
 }) => {
   const handleClick = () => {
     onClick(movie);
@@ -18,14 +24,14 @@ const MovieCard: React.FC<MovieCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`group cursor-pointer relative overflow-hidden  transition-all duration-300 hover:scale-105 ${
+      className={`group cursor-pointer relative overflow-hidden transition-all duration-300 hover:scale-105 ${
         isSelected ? "ring-2" : ""
       }`}
       style={{
         borderColor: isSelected ? "#FFD600" : "transparent",
       }}
     >
-      <div className="aspect-[2/3] relative overflow-hidden  bg-gray-800">
+      <div className="aspect-[2/3] relative overflow-hidden bg-gray-800">
         <img
           src={
             movie.Poster !== "N/A" ? movie.Poster : "/api/placeholder/280/420"
@@ -56,16 +62,19 @@ const MovieCard: React.FC<MovieCardProps> = ({
           )}
         </div>
 
-        {/* <div className="absolute bottom-0 left-0 right-0 p-3">
-          <h2
-            className={`font-semibold left-1/2 text-white text-sm leading-tight line-clamp-2 text-center transition-colors ${
-              isSelected ? "" : "group-hover:text-yellow-300"
-            }`}
-            style={isSelected ? { color: "#FFD600" } : {}}
-          >
-            {movie.Title}
-          </h2>
-        </div> */}
+        {/* Conditionally show title based on showTitle prop */}
+        {showTitle && (
+          <div className="absolute bottom-0 left-0 right-0 p-3">
+            <h2
+              className={`font-semibold text-white mb-12 text-sm leading-tight line-clamp-2 text-center transition-colors ${
+                isSelected ? "" : "group-hover:text-yellow-300"
+              }`}
+              style={isSelected ? { color: "#FFD600" } : {}}
+            >
+              {movie.Title}
+            </h2>
+          </div>
+        )}
 
         <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
