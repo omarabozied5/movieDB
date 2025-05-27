@@ -35,7 +35,6 @@ The application features a Netflix-inspired UI with smooth animations, responsiv
 components/
 ├── common/          # Reusable UI components
 ├── movie/           # Movie-specific components
-└── navigation/      # Navigation and search components
 ```
 
 - **Reasoning**: Clear separation of concerns, improved reusability, and easier maintenance

@@ -37,7 +37,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20" />
 
-        <div className="absolute top-2 right-2 z-10">
+        <div className="absolute top-2 left-2 z-10">
           {movie.imdbRating ? (
             <div
               className="flex items-center gap-1 px-2 py-1 backdrop-blur-sm rounded-md text-xs font-semibold"
