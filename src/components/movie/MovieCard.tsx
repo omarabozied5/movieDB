@@ -2,7 +2,6 @@ import React from "react";
 import { Star } from "lucide-react";
 import type { MovieCardProps } from "../../types";
 
-// Extend the props to include showTitle option
 interface ExtendedMovieCardProps extends MovieCardProps {
   showTitle?: boolean;
 }
@@ -11,7 +10,7 @@ const MovieCard: React.FC<ExtendedMovieCardProps> = ({
   movie,
   onClick,
   isSelected,
-  showTitle = true, // Default to true to show title
+  showTitle = true,
 }) => {
   const handleClick = () => {
     onClick(movie);
@@ -63,7 +62,6 @@ const MovieCard: React.FC<ExtendedMovieCardProps> = ({
           )}
         </div>
 
-        {/* Conditionally show title based on showTitle prop */}
         {showTitle && (
           <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
             <h2
