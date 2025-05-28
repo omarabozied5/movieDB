@@ -38,9 +38,12 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
       setIsAnimating(true);
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleEscape);
+      // Prevent body scroll on mobile
+      document.body.style.overflow = "hidden";
       return () => {
         document.removeEventListener("mousedown", handleClickOutside);
         document.removeEventListener("keydown", handleEscape);
+        document.body.style.overflow = "unset";
       };
     } else {
       setIsAnimating(false);
@@ -53,15 +56,30 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
     onMoreInfo(movie);
   };
 
-  const columnInRow = selectedMovieIndex % columnsPerRow;
+  // Responsive column calculation
+  const getColumnsPerRow = () => {
+    if (typeof window !== "undefined") {
+      const width = window.innerWidth;
+      if (width < 640) return 2; // mobile
+      if (width < 768) return 3; // sm
+      if (width < 1024) return 4; // md
+      return 5; // lg and above
+    }
+    return columnsPerRow;
+  };
+
+  const responsiveColumnsPerRow = getColumnsPerRow();
+  const columnInRow = selectedMovieIndex % responsiveColumnsPerRow;
   const pointerLeftPosition = `${
-    (columnInRow / columnsPerRow) * 100 + 100 / columnsPerRow / 2
+    (columnInRow / responsiveColumnsPerRow) * 100 +
+    100 / responsiveColumnsPerRow / 2
   }%`;
 
   return (
     <div className="col-span-full">
+      {/* Pointer triangle - hide on mobile */}
       <div
-        className="flex justify-start relative"
+        className="hidden sm:flex justify-start relative"
         style={{ paddingLeft: "1.5rem" }}
       >
         <div
@@ -90,16 +108,17 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
 
       <div
         ref={dialogRef}
-        className="relative mx-4 overflow-hidden shadow-2xl bg-gray-900 transition-all duration-500 ease-out transform"
+        className="relative mx-2 sm:mx-4 overflow-hidden shadow-2xl bg-gray-900 transition-all duration-500 ease-out transform rounded-lg"
         style={{
-          border: "4px solid #FFD700",
-          minHeight: "400px",
+          border: "2px sm:border-4 solid #FFD700",
+          minHeight: "300px",
           transform: isAnimating
             ? "translateY(0) scale(1)"
             : "translateY(-20px) scale(0.95)",
           opacity: isAnimating ? 1 : 0,
         }}
       >
+        {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
@@ -111,14 +130,15 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
           <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/85 to-black/60" />
         </div>
 
-        <div className="relative z-10 p-8 min-h-[400px] flex flex-col">
-          <div className="mb-8">
+        <div className="relative z-10 p-4 sm:p-6 lg:p-8 min-h-[300px] sm:min-h-[400px] flex flex-col">
+          {/* Title and Plot Section */}
+          <div className="mb-4 sm:mb-6 lg:mb-8">
             <div>
               <h1
-                className="font-bold text-white mb-6 leading-tight"
+                className="font-bold text-white mb-3 sm:mb-4 lg:mb-6 leading-tight"
                 style={{
                   fontFamily: "Roboto, sans-serif",
-                  fontSize: "48px",
+                  fontSize: "clamp(1.5rem, 4vw, 3rem)",
                   textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
                 }}
               >
@@ -126,11 +146,11 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
               </h1>
 
               {movie.Plot && movie.Plot !== "N/A" && (
-                <div className="mb-6">
-                  <span className="text-white font-bold text-lg block mb-3">
+                <div className="mb-4 sm:mb-6">
+                  <span className="text-white font-bold text-sm sm:text-base lg:text-lg block mb-2 sm:mb-3">
                     Short Bio:
                   </span>
-                  <p className="text-gray-300 text-base leading-relaxed">
+                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed line-clamp-3 sm:line-clamp-none">
                     {movie.Plot}
                   </p>
                 </div>
@@ -138,10 +158,12 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-between items-start mt-auto">
-            <div className="flex-1 max-w-xs flex flex-col h-full">
-              <div className="mb-8">
-                <span className="text-white font-bold text-xl block mb-3">
+          {/* Content Section - Responsive Layout */}
+          <div className="flex flex-col sm:flex-row justify-between items-start mt-auto gap-4 sm:gap-6">
+            {/* Rating and Button Section */}
+            <div className="w-full sm:flex-1 sm:max-w-xs flex flex-col sm:h-full">
+              <div className="mb-4 sm:mb-8">
+                <span className="text-white font-bold text-lg sm:text-xl block mb-2 sm:mb-3">
                   Rating
                 </span>
                 <div className="flex items-center gap-1">
@@ -154,7 +176,7 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
                     return (
                       <Star
                         key={i}
-                        className="w-8 h-8 text-primary"
+                        className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-primary"
                         style={{
                           fill: isFilled || isHalf ? "#FFD700" : "transparent",
                         }}
@@ -167,7 +189,7 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
               <div className="mt-auto">
                 <button
                   onClick={handleMoreInfo}
-                  className="text-black px-12 py-3 font-bold text-base hover:opacity-90 transition-all duration-200 flex items-center gap-3 rounded mt-16 hover:scale-105"
+                  className="w-full sm:w-auto text-black px-6 sm:px-8 lg:px-12 py-2 sm:py-3 font-bold text-sm sm:text-base hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 rounded hover:scale-105 touch-manipulation"
                   style={{ background: "#FFD700" }}
                 >
                   More Info
@@ -175,48 +197,53 @@ const MovieDialog: React.FC<ExtendedMovieDialogProps> = ({
               </div>
             </div>
 
-            <div className="flex-1 grid grid-cols-4 gap-x-8 gap-y-6 text-base">
+            {/* Movie Details Grid - Responsive */}
+            <div className="w-full sm:flex-1 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-x-8 sm:gap-y-6 text-sm sm:text-base">
               {movie.Genre && movie.Genre !== "N/A" && (
-                <div>
-                  <span className="text-white font-bold text-xl block mb-3">
+                <div className="col-span-1">
+                  <span className="text-white font-bold text-base sm:text-lg lg:text-xl block mb-2 sm:mb-3">
                     Genre
                   </span>
-                  <span className="bg-gray-600 text-white px-4 py-2 rounded text-sm font-semibold">
+                  <span className="bg-gray-600 text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm font-semibold inline-block">
                     {movie.Genre.split(",")[0].trim()}
                   </span>
                 </div>
               )}
 
               {movie.Released && movie.Released !== "N/A" && (
-                <div>
-                  <span className="text-white font-bold text-xl block mb-3">
+                <div className="col-span-1">
+                  <span className="text-white font-bold text-base sm:text-lg lg:text-xl block mb-2 sm:mb-3">
                     Released
                   </span>
-                  <span className="text-white text-base">{movie.Released}</span>
+                  <span className="text-white text-sm sm:text-base">
+                    {movie.Released}
+                  </span>
                 </div>
               )}
 
               {movie.Director && movie.Director !== "N/A" && (
-                <div>
-                  <span className="text-white font-bold text-xl block mb-3">
+                <div className="col-span-1 sm:col-span-2 lg:col-span-1">
+                  <span className="text-white font-bold text-base sm:text-lg lg:text-xl block mb-2 sm:mb-3">
                     Directors
                   </span>
-                  <span className="text-white text-base">{movie.Director}</span>
+                  <span className="text-white text-sm sm:text-base line-clamp-2">
+                    {movie.Director}
+                  </span>
                 </div>
               )}
 
               {movie.Language && movie.Language !== "N/A" && (
-                <div>
-                  <span className="text-white font-bold text-xl block mb-3">
+                <div className="col-span-1 sm:col-span-2 lg:col-span-1">
+                  <span className="text-white font-bold text-base sm:text-lg lg:text-xl block mb-2 sm:mb-3">
                     Language
                   </span>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-1 sm:gap-2 flex-wrap">
                     {movie.Language.split(",")
                       .slice(0, 2)
                       .map((lang, i) => (
                         <span
                           key={i}
-                          className="bg-yellow-400 text-primary px-3 py-1 rounded text-sm font-bold"
+                          className="bg-yellow-400 text-primary px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-bold"
                         >
                           {lang.trim()}
                         </span>

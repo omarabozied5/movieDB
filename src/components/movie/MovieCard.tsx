@@ -24,14 +24,14 @@ const MovieCard: React.FC<ExtendedMovieCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`group cursor-pointer relative overflow-hidden transition-all duration-300 hover:scale-105 ${
+      className={`group cursor-pointer relative overflow-hidden transition-all duration-300 hover:scale-105 touch-manipulation ${
         isSelected ? "ring-2" : ""
       }`}
       style={{
         borderColor: isSelected ? "#FFD600" : "transparent",
       }}
     >
-      <div className="aspect-[2/3] relative overflow-hidden bg-gray-800">
+      <div className="aspect-[2/3] relative overflow-hidden bg-gray-800 rounded-lg">
         <img
           src={
             movie.Poster !== "N/A" ? movie.Poster : "/api/placeholder/280/420"
@@ -39,6 +39,7 @@ const MovieCard: React.FC<ExtendedMovieCardProps> = ({
           alt={movie.Title}
           onError={handleImageError}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          loading="lazy"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20" />
@@ -46,15 +47,15 @@ const MovieCard: React.FC<ExtendedMovieCardProps> = ({
         <div className="absolute top-2 left-2 z-10">
           {movie.imdbRating ? (
             <div
-              className="flex items-center gap-1 px-2 py-1 backdrop-blur-sm rounded-md text-xs font-semibold"
+              className="flex items-center gap-1 px-2 py-1 backdrop-blur-sm rounded-md text-xs sm:text-sm font-semibold"
               style={{ backgroundColor: "#FFD600", color: "#000000" }}
             >
-              <Star className="w-3 h-3 fill-current" />
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
               <span>{movie.imdbRating}</span>
             </div>
           ) : (
             <div
-              className="px-2 py-1 bg-black/80 backdrop-blur-sm rounded-md text-xs font-medium uppercase tracking-wider"
+              className="px-2 py-1 bg-black/80 backdrop-blur-sm rounded-md text-xs sm:text-sm font-medium uppercase tracking-wider"
               style={{ color: "#FFD600" }}
             >
               <span>{movie.Type}</span>
@@ -64,9 +65,9 @@ const MovieCard: React.FC<ExtendedMovieCardProps> = ({
 
         {/* Conditionally show title based on showTitle prop */}
         {showTitle && (
-          <div className="absolute bottom-0 left-0 right-0 p-3">
+          <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
             <h2
-              className={`font-semibold text-white mb-12 text-sm leading-tight line-clamp-2 text-center transition-colors ${
+              className={`font-semibold text-white text-xs sm:text-sm md:text-base leading-tight line-clamp-2 text-center transition-colors ${
                 isSelected ? "" : "group-hover:text-yellow-300"
               }`}
               style={isSelected ? { color: "#FFD600" } : {}}
